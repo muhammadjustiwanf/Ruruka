@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { createCanvas, loadImage, Image } from 'canvas';
-import { Attachment, GuildMember} from 'discord.js';
+import { MessageAttachment, GuildMember} from 'discord.js';
 import { TYPES } from '../../../types';
 import { CanvasHelper } from '../../canvas-helper';
 import * as gifEncoder from 'gif-encoder'; // TODO: Not TypeScript-friendly at this time
@@ -57,33 +57,33 @@ export class ArccorpGreeting {
     this.encoder.writeHeader();
   }
 
-  private attachmentPromise(): Promise<Attachment> {
+  private attachmentPromise(): Promise<MessageAttachment> {
     const buffers: Buffer[] = [];
-    const attachment: Promise<Attachment> = new Promise((resolve, reject) => {
+    const Attachment: Promise<MessageAttachment> = new Promise((resolve, reject) => {
       this.encoder.on('data', (buffer: Buffer) => {
         buffers.push(buffer);
       });
       this.encoder.on('end', () => {
         console.log('stream complete!');
-        resolve(new Attachment(Buffer.concat(buffers), 'welcome.gif'));
+        resolve(new MessageAttachment(Buffer.concat(buffers), 'welcome.gif'));
       });
       this.encoder.on('error', err => {
         console.log(err);
         reject(err);
       });
     });
-    return attachment;
+    return Attachment;
   }
 
   /**
    * Generate the animated greeting Gif that will be the reply attachment
    */
-  public async generateGreetingAttachment(member: GuildMember): Promise<Attachment> {
+  public async generateGreetingAttachment(member: GuildMember): Promise<MessageAttachment> {
     this.setupCanvas();
     this.initEncoder();
     const attachment = this.attachmentPromise();
     await this.preloadBackgroundSequence();
-    const avatarImage:Image = await loadImage(member.user.displayAvatarURL);
+    const avatarImage:Image = await loadImage(member.user.displayAvatarURL());
     this.captureFrames(member, avatarImage);
     this.encoder.finish();
     return attachment;
