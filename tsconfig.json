@@ -9,13 +9,11 @@
     ],
     "sourceMap": true,
     "types": [
-      // add node as an option
       "node",
       "reflect-metadata",
       "promise-queue"
     ],
     "typeRoots": [
-      // add path to @types
       "node_modules/@types"
     ],
     "experimentalDecorators": true,
