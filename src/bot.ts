@@ -37,7 +37,7 @@ export class Bot {
       if (message.content === '!join') {
         this.client.emit(
           'guildMemberAdd', message.member ||
-          await message.guild.fetchMember(message.author)
+          await message.guild.members.fetch(message.author)
         );
       }
     });
