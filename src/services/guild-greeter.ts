@@ -1,4 +1,4 @@
-import { GuildMember, TextChannel, Message, Attachment, RichEmbed } from 'discord.js';
+import { GuildMember, TextChannel, Message, MessageAttachment, MessageEmbed } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { ArccorpGreeting } from './greetings/sc/arccorp-greeting';
 import { TYPES } from '../types';
@@ -31,8 +31,8 @@ export class GuildGreeter {
       return this.queue.add(() => {
         return this.arccorpGreeting.generateGreetingAttachment(member);
       })
-      .then((attachment: Attachment) => {
-        return channel.send(this.createRichEmbedResponse(member, attachment));
+      .then((attachment: MessageAttachment) => {
+        return channel.send(this.createMessageEmbedResponse(member, attachment));
       })
       .catch((err) => {
         console.log(err);
@@ -42,8 +42,8 @@ export class GuildGreeter {
     return Promise.reject();
   }
 
-  private createRichEmbedResponse(member: GuildMember, attachment: Attachment): RichEmbed {
-    const exampleEmbed = new RichEmbed()
+  private createMessageEmbedResponse(member: GuildMember, attachment: MessageAttachment): MessageEmbed {
+    const exampleEmbed = new MessageEmbed()
       .setColor('#50a0b3')
       .attachFiles([attachment])
       .setImage('attachment://welcome.gif')
@@ -53,7 +53,7 @@ export class GuildGreeter {
   }
 
   private findTextBasedChannel(channelName: string, guildMember: GuildMember): TextChannel {
-    const guildChannel = guildMember.guild.channels.find(ch => ch.name === channelName);
+    const guildChannel = guildMember.guild.channels.cache.find(ch => ch.name === channelName);
     if (!guildChannel) return;
     return guildChannel as TextChannel;
   }
